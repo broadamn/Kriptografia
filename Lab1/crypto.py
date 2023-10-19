@@ -13,23 +13,24 @@ import utils
 
 # Caesar Cipher
 
-def encrypt_caesar(plaintext):
-    """Encrypt plaintext using a Caesar cipher.
+def encrypt_caesar(plaintext, key):
+    encrypted = ""
+    for char in plaintext:
+        newChar = chr(((int(ord(char)) - 65 + key) % 26) + 65)
+        encrypted += newChar
+    return encrypted
 
-    Add more implementation details here.
-    """
-    raise NotImplementedError  # Your implementation here
 
-
-def decrypt_caesar(ciphertext):
-    """Decrypt a ciphertext using a Caesar cipher.
-
-    Add more implementation details here.
-    """
-    raise NotImplementedError  # Your implementation here
+def decrypt_caesar(ciphertext, key):
+    decrypted = ""
+    for char in ciphertext:
+        newChar = chr(((int(ord(char)) - 65 - key) % 26) + 65)
+        decrypted += newChar
+    return decrypted
 
 
 # Vigenere Cipher
+
 
 def encrypt_vigenere(plaintext, keyword):
     """Encrypt plaintext using a Vigenere cipher with a keyword.
@@ -48,6 +49,7 @@ def decrypt_vigenere(ciphertext, keyword):
 
 
 # Merkle-Hellman Knapsack Cryptosystem
+
 
 def generate_private_key(n=8):
     """Generate a private key for use in the Merkle-Hellman Knapsack Cryptosystem.
@@ -70,6 +72,7 @@ def generate_private_key(n=8):
     @return 3-tuple `(w, q, r)`, with `w` a n-tuple, and q and r ints.
     """
     raise NotImplementedError  # Your implementation here
+
 
 def create_public_key(private_key):
     """Create a public key corresponding to the given private key.
@@ -108,6 +111,7 @@ def encrypt_mh(message, public_key):
     """
     raise NotImplementedError  # Your implementation here
 
+
 def decrypt_mh(message, private_key):
     """Decrypt an incoming message using a private key
 
@@ -127,4 +131,3 @@ def decrypt_mh(message, private_key):
     @return bytearray or str of decrypted characters
     """
     raise NotImplementedError  # Your implementation here
-

@@ -107,11 +107,12 @@ def run_caesar():
     action = get_action()
     encrypting = action == 'E'
     data = clean_caesar(get_input(binary=False))
+    key = int(input("Enter the key: "))
 
     print("* Transform *")
     print("{}crypting {} using Caesar cipher...".format('En' if encrypting else 'De', data))
 
-    output = (encrypt_caesar if encrypting else decrypt_caesar)(data)
+    output = (encrypt_caesar if encrypting else decrypt_caesar)(data, key)
 
     set_output(output)
 
