@@ -4,48 +4,66 @@ File: crypto.py
 ---------------
 Assignment 1: Cryptography
 Course: CS 41
-Name: <YOUR NAME>
-SUNet: <SUNet ID>
+Name: Biro Adam
+SUNet: baim2119
 
-Replace this with a description of the program.
 """
 import utils
 
 # Caesar Cipher
 
 def encrypt_caesar(plaintext, key):
-    encrypted = ""
-    for char in plaintext:
-        newChar = chr(((int(ord(char)) - 65 + key) % 26) + 65)
-        encrypted += newChar
+    encrypted = ''.join([chr(((ord(char) - 65 + key) % 26) + 65) for char in plaintext])
     return encrypted
 
 
 def decrypt_caesar(ciphertext, key):
-    decrypted = ""
-    for char in ciphertext:
-        newChar = chr(((int(ord(char)) - 65 - key) % 26) + 65)
-        decrypted += newChar
+    decrypted = ''.join([chr(((ord(char) - 65 - key) % 26) + 65) for char in ciphertext])
     return decrypted
 
 
 # Vigenere Cipher
 
-
 def encrypt_vigenere(plaintext, keyword):
-    """Encrypt plaintext using a Vigenere cipher with a keyword.
 
-    Add more implementation details here.
-    """
-    raise NotImplementedError  # Your implementation here
+    ciphertext = ""
+    len_k = len(keyword)
+    index = 0
 
+    for char in plaintext:
+        if char.isalpha():
+            
+            shift = ord(keyword[index]) - ord('A')
+
+            encrypted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
+            ciphertext += encrypted_char
+
+            index = (index + 1) % len_k
+        else:
+            ciphertext += char
+
+    return ciphertext
 
 def decrypt_vigenere(ciphertext, keyword):
-    """Decrypt ciphertext using a Vigenere cipher with a keyword.
+    
+    plaintext = ""
+    len_k = len(keyword)
+    index = 0
 
-    Add more implementation details here.
-    """
-    raise NotImplementedError  # Your implementation here
+    for char in ciphertext:
+        if char.isalpha():
+            
+            shift = ord(keyword[index]) - ord('A')
+
+            encrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
+            plaintext += encrypted_char
+
+            index = (index + 1) % len_k
+        else:
+            plaintext += char
+
+    return plaintext
+
 
 
 # Merkle-Hellman Knapsack Cryptosystem
