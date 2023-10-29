@@ -9,19 +9,30 @@ If you are a student, you shouldn't need to change anything in this file.
 """
 import random
 
-from crypto import (encrypt_caesar, decrypt_caesar,
-                    encrypt_vigenere, decrypt_vigenere,
-                    generate_private_key, create_public_key,
-                    encrypt_mh, decrypt_mh)
+from crypto import (
+    encrypt_caesar,
+    decrypt_caesar,
+    encrypt_vigenere,
+    decrypt_vigenere,
+    generate_private_key,
+    create_public_key,
+    encrypt_mh,
+    decrypt_mh,
+    encrypt_scytale,
+    decrypt_scytale,
+    decrypt_railfence,
+    encrypt_railfence
+)
 
 
 #############################
 # GENERAL CONSOLE UTILITIES #
 #############################
 
+
 def get_tool():
     print("* Tool *")
-    return _get_selection("(C)aesar, (V)igenere or (M)erkle-Hellman? ", "CVM")
+    return _get_selection("(C)aesar, (V)igenere, (S)cytale, (R)ailfence or (M)erkle-Hellman? ", "CVSRM")
 
 
 def get_action():
@@ -40,18 +51,18 @@ def get_filename():
 def get_input(binary=False):
     print("* Input *")
     choice = _get_selection("(F)ile or (S)tring? ", "FS")
-    if choice == 'S':
+    if choice == "S":
         text = input("Enter a string: ").strip().upper()
         while not text:
             text = input("Enter a string: ").strip().upper()
         if binary:
-            return bytes(text, encoding='utf8')
+            return bytes(text, encoding="utf8")
         return text
     else:
         filename = get_filename()
-        flags = 'r'
+        flags = "r"
         if binary:
-            flags += 'b'
+            flags += "b"
         with open(filename, flags) as infile:
             return infile.read()
 
@@ -59,13 +70,13 @@ def get_input(binary=False):
 def set_output(output, binary=False):
     print("* Output *")
     choice = _get_selection("(F)ile or (S)tring? ", "FS")
-    if choice == 'S':
+    if choice == "S":
         print(output)
     else:
         filename = get_filename()
-        flags = 'w'
+        flags = "w"
         if binary:
-            flags += 'b'
+            flags += "b"
         with open(filename, flags) as outfile:
             print("Writing data to {}...".format(filename))
             outfile.write(output)
@@ -74,7 +85,9 @@ def set_output(output, binary=False):
 def _get_selection(prompt, options):
     choice = input(prompt).upper()
     while not choice or choice[0] not in options:
-        choice = input("Please enter one of {}. {}".format('/'.join(options), prompt)).upper()
+        choice = input(
+            "Please enter one of {}. {}".format("/".join(options), prompt)
+        ).upper()
     return choice[0]
 
 
@@ -89,9 +102,11 @@ def get_yes_or_no(prompt, reprompt=None):
         reprompt = prompt
 
     choice = input("{} (Y/N) ".format(prompt)).upper()
-    while not choice or choice[0] not in ['Y', 'N']:
-        choice = input("Please enter either 'Y' or 'N'. {} (Y/N)? ".format(reprompt)).upper()
-    return choice[0] == 'Y'
+    while not choice or choice[0] not in ["Y", "N"]:
+        choice = input(
+            "Please enter either 'Y' or 'N'. {} (Y/N)? ".format(reprompt)
+        ).upper()
+    return choice[0] == "Y"
 
 
 def clean_caesar(text):
@@ -100,17 +115,21 @@ def clean_caesar(text):
 
 
 def clean_vigenere(text):
-    return ''.join(ch for ch in text.upper() if ch.isupper())
+    return "".join(ch for ch in text.upper() if ch.isupper())
 
 
 def run_caesar():
     action = get_action()
-    encrypting = action == 'E'
+    encrypting = action == "E"
     data = clean_caesar(get_input(binary=False))
     key = int(input("Enter the key: "))
 
     print("* Transform *")
-    print("{}crypting {} using Caesar cipher...".format('En' if encrypting else 'De', data))
+    print(
+        "{}crypting {} using Caesar cipher...".format(
+            "En" if encrypting else "De", data
+        )
+    )
 
     output = (encrypt_caesar if encrypting else decrypt_caesar)(data, key)
 
@@ -119,15 +138,53 @@ def run_caesar():
 
 def run_vigenere():
     action = get_action()
-    encrypting = action == 'E'
+    encrypting = action == "E"
     data = clean_vigenere(get_input(binary=False))
 
     print("* Transform *")
     keyword = clean_vigenere(input("Keyword? "))
 
-    print("{}crypting {} using Vigenere cipher and keyword {}...".format('En' if encrypting else 'De', data, keyword))
+    print(
+        "{}crypting {} using Vigenere cipher and keyword {}...".format(
+            "En" if encrypting else "De", data, keyword
+        )
+    )
 
     output = (encrypt_vigenere if encrypting else decrypt_vigenere)(data, keyword)
+
+    set_output(output)
+
+
+def run_scytale():
+    action = get_action()
+    encrypting = action == "E"
+    data = get_input(binary=False)
+
+    print("* Transform *")
+    circum = int(input("Circumference? "))
+
+    print(
+        "{}crypting {} using Scytale cipher and circumference {}...".format(
+            "En" if encrypting else "De", data, circum
+        )
+    )
+
+    output = (encrypt_scytale if encrypting else decrypt_scytale)(data, circum)
+
+    set_output(output)
+
+
+def run_railfence():
+    action = get_action()
+    encrypting = action == 'E'
+    data = get_input(binary=False)
+
+    print("* Transform *")
+    num_rails = int(input("Number of rails? "))
+
+    print("{}crypting {} using Scytale cipher and circumference {}...".format('En' if encrypting else 'De', data, num_rails))
+
+    output = (encrypt_railfence if encrypting else decrypt_railfence)(data, num_rails)
 
     set_output(output)
 
@@ -138,6 +195,7 @@ def run_merkle_hellman():
     print("* Seed *")
     seed = input("Set Seed [enter for random]: ")
     import random
+
     if not seed:
         random.seed()
     else:
@@ -148,11 +206,11 @@ def run_merkle_hellman():
     private_key = generate_private_key()
     public_key = create_public_key(private_key)
 
-    if action == 'E':  # Encrypt
+    if action == "E":  # Encrypt
         data = get_input(binary=True)
         print("* Transform *")
         chunks = encrypt_mh(data, public_key)
-        output = ' '.join(map(str, chunks))
+        output = " ".join(map(str, chunks))
     else:  # Decrypt
         data = get_input(binary=False)
         chunks = [int(line.strip()) for line in data.split() if line.strip()]
@@ -169,14 +227,16 @@ def run_suite():
     Asks the user for input text from a string or file, whether to encrypt
     or decrypt, what tool to use, and where to show the output.
     """
-    print('-' * 34)
+    print("-" * 34)
     tool = get_tool()
     # This isn't the cleanest way to implement functional control flow,
     # but I thought it was too cool to not sneak in here!
     commands = {
-        'C': run_caesar,         # Caesar Cipher
-        'V': run_vigenere,       # Vigenere Cipher
-        'M': run_merkle_hellman  # Merkle-Hellman Knapsack Cryptosystem
+        "C": run_caesar,  # Caesar Cipher
+        "V": run_vigenere,  # Vigenere Cipher
+        "S": run_scytale, # Scytale Cipher
+        "M": run_merkle_hellman,  # Merkle-Hellman Knapsack Cryptosystem
+        "R": run_railfence,       # Railfence Cipher
     }
     commands[tool]()
 
@@ -190,5 +250,5 @@ def main():
     print("Goodbye!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
