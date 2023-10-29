@@ -169,7 +169,6 @@ def decrypt_railfence(ciphertext, num_rails):
 
 
 def generate_private_key(n=8):
-    # Generate a superincreasing sequence 'w' of length 'n'
     
     w = []
     w.append(random.randint(1, 100))
@@ -181,10 +180,8 @@ def generate_private_key(n=8):
         print("jo")
     else:
         print("nem jo")
-    # Choose an integer 'q' greater than the sum of all elements in 'w'
     q = random.randint(sum(w) + 1, 2 * sum(w))
 
-    # Discover an integer 'r' between 2 and 'q' that is coprime to 'q'
     r = random.randint(2, q)
     while not utils.coprime(r, q):
         r = random.randint(2, q)
@@ -194,7 +191,6 @@ def generate_private_key(n=8):
 
 def create_public_key(private_key):
     w, q, r = private_key
-    # Compute the public key 'beta'
     beta = [(r * wi) % q for wi in w]
     return tuple(beta)
 
@@ -215,7 +211,7 @@ def decrypt_mh(message, private_key):
     w, q, r = private_key
     s = utils.modinv(
         r, q
-    )  # Compute the modular inverse of r mod q using Extended Euclidean algorithm
+    )
 
     decrypted_bytes = bytearray()
     for c in message:
@@ -230,11 +226,8 @@ def decrypt_mh(message, private_key):
             i -= 1
 
         if c_prime != 0:
-            # If c_prime is not fully reduced to zero, it means there's no valid superincreasing subset
-            # This indicates a decryption error
-            raise ValueError("Decryption error. Invalid ciphertext.")
+            raise ValueError("hiba")
 
-        # Reconstruct the original byte from the superincreasing subset
         original_byte = 0
         for subset_element in superincreasing_subset:
             original_byte |= 1 << w.index(subset_element)
