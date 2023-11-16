@@ -103,9 +103,9 @@ def decrypt_scytale(ciphertext, circumference):
 def encrypt_railfence(plaintext, num_rails):
     i, j, k = 0, 0, 1
     net = []
-    for x in range(0, num_rails): net.append([])
+    for x in range(0, num_rails):
+        net.append([])
     while i < len(plaintext):
-
         net[j].append(plaintext[i])
 
         if j == 0:
@@ -117,20 +117,21 @@ def encrypt_railfence(plaintext, num_rails):
         i += 1
         j += k
 
-    crypted = ''
-    for x in range(0, num_rails): crypted = crypted + ''.join(map(str, net[x]))
+    crypted = ""
+    for x in range(0, num_rails):
+        crypted = crypted + "".join(map(str, net[x]))
     return crypted
 
 
 def decrypt_railfence(ciphertext, num_rails):
     net = []
-    for i in range(0, num_rails): net.append(['0' for j in range(0, len(ciphertext))])
+    for i in range(0, num_rails):
+        net.append(["0" for j in range(0, len(ciphertext))])
 
     i, j, k = 0, 0, 1
 
     for j in range(0, len(ciphertext)):
-
-        net[i][j] = '*'
+        net[i][j] = "*"
 
         if i == 0:
             k = 1
@@ -143,14 +144,13 @@ def decrypt_railfence(ciphertext, num_rails):
     k = 0
     for i in range(0, num_rails):
         for j in range(0, len(ciphertext)):
-            if net[i][j] == '*':
+            if net[i][j] == "*":
                 net[i][j] = ciphertext[k]
                 k += 1
 
     i, j, k = 0, 0, 1
     decrypted = []
     for j in range(0, len(ciphertext)):
-
         decrypted.append(net[i][j])
 
         if i == 0:
@@ -161,22 +161,20 @@ def decrypt_railfence(ciphertext, num_rails):
 
         i += k
 
-    return ''.join(map(str, decrypted))
-
+    return "".join(map(str, decrypted))
 
 
 # Merkle-Hellman Knapsack Cryptosystem
 
 
 def generate_private_key(n=8):
-    
     w = []
     w.append(random.randint(1, 100))
-    for _ in range(n-1):
+    for _ in range(n - 1):
         s = sum(w)
-        w.append(random.randint(s, 2*s))
-        
-    if(utils.is_superincreasing(w)):
+        w.append(random.randint(s, 2 * s))
+
+    if utils.is_superincreasing(w):
         print("jo")
     else:
         print("nem jo")
@@ -209,9 +207,7 @@ def encrypt_mh(message, public_key):
 
 def decrypt_mh(message, private_key):
     w, q, r = private_key
-    s = utils.modinv(
-        r, q
-    )
+    s = utils.modinv(r, q)
 
     decrypted_bytes = bytearray()
     for c in message:
