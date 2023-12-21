@@ -1,6 +1,7 @@
 import utils
 import random
 
+
 def generate_private_key(n=8):
     """Generate a private key to use with the Merkle-Hellman Knapsack Cryptosystem.
 
@@ -26,10 +27,10 @@ def generate_private_key(n=8):
     :returns: 3-tuple private key `(w, q, r)`, with `w` a n-tuple, and q and r ints.
     """
 
-    w = [0]*n
-    w[0] = random.randint(2,10)
+    w = [0] * n
+    w[0] = random.randint(2, 10)
     total = w[0]
-    for i in range(1,n):
+    for i in range(1, n):
         w[i] = random.randint(total + 1, 2 * total)
         total += w[i]
 
@@ -40,10 +41,9 @@ def generate_private_key(n=8):
 
     r = 0
     while not utils.coprime(r, q):
-        r = random.randint(2, q-1)
+        r = random.randint(2, q - 1)
 
-    return (tuple(w), q, r)
-
+    return tuple(w), q, r
 
 
 def create_public_key(private_key):
@@ -63,10 +63,9 @@ def create_public_key(private_key):
     """
 
     (w, q, r) = private_key
-    beta = [r*x% q for x in w]
+    beta = [r * x % q for x in w]
 
     return beta
-
 
 
 def encrypt_mh(message, public_key):
@@ -96,10 +95,9 @@ def encrypt_mh(message, public_key):
     result = [0] * len(message)
     for i in range(0, len(message)):
         bits = utils.byte_to_bits(message[i])
-        result[i] = sum([bits[j]*public_key[j] for j in range(0, 8)])
+        result[i] = sum([bits[j] * public_key[j] for j in range(0, 8)])
 
     return result
-
 
 
 def decrypt_mh(message, private_key):
@@ -131,11 +129,10 @@ def decrypt_mh(message, private_key):
     for i in range(0, nn):
         c = message[i] * s % q
         bits = [0] * 8
-        for j in range(7,-1,-1):
+        for j in range(7, -1, -1):
             if c >= w[j]:
-                bits[j]= 1
+                bits[j] = 1
                 c -= w[j]
         result[i] = utils.bits_to_byte(bits)
 
     return result
-

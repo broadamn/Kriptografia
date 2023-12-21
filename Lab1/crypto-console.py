@@ -182,7 +182,7 @@ def run_railfence():
     print("* Transform *")
     num_rails = int(input("Number of rails? "))
 
-    print("{}crypting {} using Scytale cipher and circumference {}...".format('En' if encrypting else 'De', data, num_rails))
+    print("{}crypting {} using Railfence cipher and number of rails {}...".format('En' if encrypting else 'De', data, num_rails))
 
     output = (encrypt_railfence if encrypting else decrypt_railfence)(data, num_rails)
 

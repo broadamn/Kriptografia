@@ -1,87 +1,83 @@
 import random
 
+
 def combined_keys(key1, key2):
-    key = [0]*len(key1)
+    key = [0] * len(key1)
     for i in range(0, len(key1)):
-        key[i] = key2[key1[i]-1]
+        key[i] = key2[key1[i] - 1]
     return key
 
 
 def generate_key():
-    key = list(range(1,55))
+    key = list(range(1, 55))
     random.shuffle(key)
     return key
 
 
-def solitaire(key):
-    key = key[:]
+def perform_solitaire(deck):
+    deck = deck[:]
     while True:
-        key = step_a(key)
-        key = step_b(key)
-        key = step_c(key)
-        key = step_d(key)
-        value = step_e(key)
+        deck = move_joker1(deck)
+        deck = move_joker2(deck)
+        deck = triple_cut(deck)
+        deck = count_cut(deck)
+        value = extract_value(deck)
         if value > 0:
-            return (value, key)
+            return value, deck
 
-def step_a(key):
-    pos_wjoker = key.index(53)
-    if pos_wjoker < 53:
-        temp = key[pos_wjoker]
-        key[pos_wjoker] = key[pos_wjoker+1]
-        key[pos_wjoker+1] = temp
+
+def move_joker1(deck):
+    white_joker_pos = deck.index(53)
+    if white_joker_pos < 53:
+        deck[white_joker_pos], deck[white_joker_pos + 1] = deck[white_joker_pos + 1], deck[white_joker_pos]
     else:
-        key = [key[0], 53] + key[1:53]
-    return key
+        deck = [deck[0], 53] + deck[1:53]
+    return deck
 
-def step_b(key):
-    pos_bjoker = key.index(54)
-    if pos_bjoker < 52:
-        temp = key[pos_bjoker]
-        key[pos_bjoker] = key[pos_bjoker+1]
-        key[pos_bjoker+1] = key[pos_bjoker+2]
-        key[pos_bjoker+2] = temp
-    elif pos_bjoker == 52:
-        key = [key[0], 54] + key[1:52] + [key[53]]
+
+def move_joker2(deck):
+    black_joker_position = deck.index(54)
+    if black_joker_position < 52:
+        deck[black_joker_position: black_joker_position + 3] = deck[
+                                                               black_joker_position + 1: black_joker_position + 4] + [
+                                                                   deck[black_joker_position]]
+    elif black_joker_position == 52:
+        deck = [deck[0], 54] + deck[1:52] + [deck[53]]
     else:
-        key = [key[0], key[1], 54] + key[2:53]
-    return key
+        deck = [deck[0], deck[1], 54] + deck[2:53]
+    return deck
 
-def step_c(key):
-    pos_wjoker = key.index(53)
-    pos_bjoker = key.index(54)
-    first = min(pos_wjoker, pos_bjoker)
-    second = max(pos_wjoker, pos_bjoker)
-    key = key[(second+1):54] + key[first:(second+1)] + key[0:first]
-    return key
 
-def step_d(key):
-    n = key[53]
-    if n <= 52:
-        key = key[n:53] + key[0:n] + [n]
-    return key
+def triple_cut(deck):
+    white_joker_pos = deck.index(53)
+    black_joker_pos = deck.index(54)
+    first, second = min(white_joker_pos, black_joker_pos), max(white_joker_pos, black_joker_pos)
+    deck = deck[(second + 1):54] + deck[first:(second + 1)] + deck[0:first]
+    return deck
 
-def step_e(key):
-    first = key[0]
-    if first > 52:
-        return -1
-    else:
-        return key[first]
+
+def count_cut(deck):
+    last_card_value = deck[53]
+    if last_card_value <= 52:
+        deck = deck[last_card_value:53] + deck[0:last_card_value] + [last_card_value]
+    return deck
+
+
+def extract_value(deck):
+    top_card_value = deck[0]
+    return -1 if top_card_value > 52 else deck[top_card_value]
+
 
 def encrypt_solitaire(message, key):
-    '''
-    :type message: bytes
-    '''
     n = len(message)
-    result = bytearray(n)
-    for i in range(0, n):
-        (value1, key) = solitaire(key)
-        (value2, key) = solitaire(key)
+    key_bytes = bytearray(n)
+    for i in range(n):
+        (x1, key) = perform_solitaire(key)
+        (x2, key) = perform_solitaire(key)
+        key_byte = (x1 & 0xF) << 4 | (x2 & 0xF)
+        key_bytes[i] = key_byte ^ message[i]
 
-        key_byte = (value1 & 0xF) << 4 | (value2 & 0xF) 
-        result[i] = key_byte^message[i] #XOR
-
-    return (result, key)
+    return key_bytes, key
 
 
 def decrypt_solitaire(message, key):

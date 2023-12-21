@@ -13,7 +13,7 @@ def main():
         clientsocket, address = s.accept()
         request = common.receive(clientsocket)
 
-        if request["type"] == 1:
+        if request["type"] == "register":
             port = request["port"]
             public_key = request["public_key"]
             dictionary[port] = public_key

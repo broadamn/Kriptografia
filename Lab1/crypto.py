@@ -105,6 +105,7 @@ def encrypt_railfence(plaintext, num_rails):
     net = []
     for x in range(0, num_rails):
         net.append([])
+
     while i < len(plaintext):
         net[j].append(plaintext[i])
 
